@@ -4,21 +4,58 @@ const pg = require("pg");
 const format = require("pg-format");
 
 const writeToPostgres = async (data) => {
-  const { Client } = pg;
-  const client = new Client();
-  await client.connect();
+  const pgdatabase = process.env.PGDATABASE;
+  delete process.env.PGDATABASE;
 
-  try {
-    await client.query(
-      format(
-        "INSERT INTO cities (city, city_ascii, lat, lng, country, iso2, iso3, population, id) VALUES %L",
-        [...data]
-      )
-    );
-  } catch (err) {
-    console.error("Error while inserting data: ", err);
-  } finally {
-    await client.end();
+  const { Client } = pg;
+
+  {
+    const client = new Client();
+    await client.connect();
+    try {
+      await client.query(format('CREATE DATABASE %s;', pgdatabase))
+    } catch (err) {
+      if (err.code !== '42P04') {
+        console.log(err)
+      }
+    } finally {
+      client.end()
+    }
+  }
+
+  {
+    const client = new Client({
+      database: pgdatabase
+    });
+    await client.connect();
+    try {
+      await client.query(format('CREATE TABLE cities (city TEXT, city_ascii TEXT, lat DECIMAL, lng DECIMAL, country TEXT, iso2 CHAR(2), iso3 CHAR(3), population INTEGER, id INTEGER);'))
+    } catch (err) {
+      if (err.code !== '42P07') {
+        console.log(err)
+      }
+    } finally {
+      client.end();
+    }
+  }
+
+  {
+    const client = new Client({
+      database: pgdatabase
+    });
+    await client.connect();
+    try {
+      await client.query(
+        format(
+          "INSERT INTO cities (city, city_ascii, lat, lng, country, iso2, iso3, population, id) VALUES %L",
+          [...data]
+        )
+      );
+    } catch (err) {
+      console.error("Error while inserting data: ", err);
+    } finally {
+      await client.end();
+    }
   }
 };
 
@@ -57,8 +94,7 @@ fs.readFile("worldcities.csv", "utf-8", (err, data) => {
       ) {
         return;
       }
-      if (headerReferenceArray[index] === "population" && item === '') 
-      {
+      if (headerReferenceArray[index] === "population" && item === '') {
         dataMap[headerReferenceArray[index]] = 0;
         return;
       }
