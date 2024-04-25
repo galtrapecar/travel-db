@@ -13,26 +13,38 @@ const writeToPostgres = async (data) => {
     const client = new Client();
     await client.connect();
     try {
-      await client.query(format('CREATE DATABASE %s;', pgdatabase))
+      await client.query(format("CREATE DATABASE %s;", pgdatabase));
     } catch (err) {
-      if (err.code !== '42P04') {
-        console.log(err)
+      if (err.code !== "42P04") {
+        console.log(err);
       }
     } finally {
-      client.end()
+      client.end();
     }
   }
 
   {
-    const client = new Client({
-      database: pgdatabase
-    });
+    const client = new Client();
     await client.connect();
     try {
-      await client.query(format('CREATE TABLE cities (city TEXT, city_ascii TEXT, lat DECIMAL, lng DECIMAL, country TEXT, iso2 CHAR(2), iso3 CHAR(3), population INTEGER, id INTEGER);'))
+      await client.query("CREATE EXTENSION cube;");
     } catch (err) {
-      if (err.code !== '42P07') {
-        console.log(err)
+      if (err.code !== 42710) {
+        console.log(err);
+      }
+    } finally {
+      client.end();
+    }
+  }
+
+  {
+    const client = new Client();
+    await client.connect();
+    try {
+      await client.query("CREATE EXTENSION cube;");
+    } catch (err) {
+      if (err.code !== 42710) {
+        console.log(err);
       }
     } finally {
       client.end();
@@ -41,7 +53,27 @@ const writeToPostgres = async (data) => {
 
   {
     const client = new Client({
-      database: pgdatabase
+      database: pgdatabase,
+    });
+    await client.connect();
+    try {
+      await client.query(
+        format(
+          "CREATE TABLE cities (city TEXT, city_ascii TEXT, lat DECIMAL, lng DECIMAL, country TEXT, iso2 CHAR(2), iso3 CHAR(3), population INTEGER, id INTEGER);"
+        )
+      );
+    } catch (err) {
+      if (err.code !== "42P07") {
+        console.log(err);
+      }
+    } finally {
+      client.end();
+    }
+  }
+
+  {
+    const client = new Client({
+      database: pgdatabase,
     });
     await client.connect();
     try {
@@ -68,7 +100,7 @@ fs.readFile("worldcities.csv", "utf-8", (err, data) => {
   const lines = data.split(/\r?\n/);
   const firstLine = lines.shift();
   // remove last line if empty
-  if (lines.at(-1) === '') lines.pop();
+  if (lines.at(-1) === "") lines.pop();
 
   if (!firstLine) {
     console.log("File is empty, nothing was read.");
@@ -94,7 +126,7 @@ fs.readFile("worldcities.csv", "utf-8", (err, data) => {
       ) {
         return;
       }
-      if (headerReferenceArray[index] === "population" && item === '') {
+      if (headerReferenceArray[index] === "population" && item === "") {
         dataMap[headerReferenceArray[index]] = 0;
         return;
       }
