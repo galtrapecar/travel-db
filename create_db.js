@@ -57,7 +57,7 @@ delete process.env.PGDATABASE;
     try {
       await client.query(
         format(
-          "CREATE TABLE cities (city TEXT, city_ascii TEXT, lat DECIMAL, lng DECIMAL, country TEXT, iso2 CHAR(2), iso3 CHAR(3), population INTEGER, id INTEGER);"
+          "CREATE TABLE cities (city TEXT, city_ascii TEXT, lat DECIMAL, lng DECIMAL, country TEXT, iso2 CHAR(2), iso3 CHAR(3), population INTEGER, image_url TEXT, id INTEGER);"
         )
       );
     } catch (err) {
