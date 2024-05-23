@@ -77,7 +77,27 @@ delete process.env.PGDATABASE;
     try {
       await client.query(
         format(
-          "CREATE TABLE monuments (id INTEGER, monument TEXT, monument_ascii TEXT, lat DECIMAL, lng DECIMAL, iso2 CHAR(2), location TEXT);"
+          "CREATE TABLE monuments (id INTEGER, name TEXT, name_ascii TEXT, lat DECIMAL, lng DECIMAL, iso2 CHAR(2), location TEXT);"
+        )
+      );
+    } catch (err) {
+      if (err.code !== "42P07") {
+        console.log(err);
+      }
+    } finally {
+      client.end();
+    }
+  }
+
+  {
+    const client = new Client({
+      database: pgdatabase,
+    });
+    await client.connect();
+    try {
+      await client.query(
+        format(
+          "CREATE TABLE windmills (id INTEGER, name TEXT, name_ascii TEXT, lat DECIMAL, lng DECIMAL, iso2 CHAR(2), location TEXT);"
         )
       );
     } catch (err) {

@@ -1,7 +1,8 @@
 const fs = require("fs");
 const readline = require("readline");
 
-const writeStream = fs.createWriteStream("monuments.txt");
+const monuments = fs.createWriteStream("monuments.txt");
+const windmills = fs.createWriteStream("windmills.txt");
 const readStream = fs.createReadStream("allCountries.txt");
 
 const rl = readline.createInterface({
@@ -10,10 +11,11 @@ const rl = readline.createInterface({
 });
 
 rl.on("line", (line) => {
-  if (!line.includes("MNMT")) return;
-  writeStream.write(`${line}\n`);
+  if (line.includes("MNMT")) monuments.write(`${line}\n`);
+  if (line.includes("MLWND")) windmills.write(`${line}\n`);
 });
 
 rl.on("close", () => {
-  writeStream.end();
+  monuments.end();
+  windmills.end();
 });

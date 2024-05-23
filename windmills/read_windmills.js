@@ -17,7 +17,7 @@ const writeToPostgres = async (data) => {
     try {
       await client.query(
         format(
-          "INSERT INTO monuments (id, name, name_ascii, lat, lng, iso2, location) VALUES %L",
+          "INSERT INTO windmills (id, windmill, windmill_ascii, lat, lng, iso2, location) VALUES %L",
           [...data]
         )
       );
@@ -29,16 +29,16 @@ const writeToPostgres = async (data) => {
   }
 };
 
-fs.readFile("monuments.txt", "utf-8", (err, data) => {
+fs.readFile("windmills.txt", "utf-8", (err, data) => {
   if (err) {
-    console.log("Error while reading monuments.txt:", err);
+    console.log("Error while reading windmills.txt:", err);
     return;
   }
 
   const lines = data.split(/\r?\n/);
   if (lines.at(-1) === "") lines.pop();
 
-  const referenceArray = ['id', 'name', 'name_ascii', '', 'lat', 'lng', '', '', 'iso2', '', '', '', '', '', '', '', '', 'location', ''];
+  const referenceArray = ['id', 'windmill', 'windmill_ascii', '', 'lat', 'lng', '', '', 'iso2', '', '', '', '', '', '', '', '', 'location', ''];
 
   const parsedData = [];
 
