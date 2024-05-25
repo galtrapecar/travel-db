@@ -17,7 +17,7 @@ const writeToPostgres = async (data) => {
     try {
       await client.query(
         format(
-          "INSERT INTO monuments (id, name, name_ascii, lat, lng, iso2, location) VALUES %L",
+          "INSERT INTO pois (id, name, name_ascii, lat, lng, iso2, location, type) VALUES %L",
           [...data]
         )
       );
@@ -49,6 +49,7 @@ fs.readFile("monuments.txt", "utf-8", (err, data) => {
         if (key === '') return;
         dataRow.push(items[index]);
     })
+    dataRow.push('monument');
     parsedData.push(dataRow);
   });
 

@@ -17,7 +17,7 @@ const writeToPostgres = async (data) => {
     try {
       await client.query(
         format(
-          "INSERT INTO windmills (id, windmill, windmill_ascii, lat, lng, iso2, location) VALUES %L",
+          "INSERT INTO pois (id, name, name_ascii, lat, lng, iso2, location, type) VALUES %L",
           [...data]
         )
       );
@@ -38,7 +38,7 @@ fs.readFile("windmills.txt", "utf-8", (err, data) => {
   const lines = data.split(/\r?\n/);
   if (lines.at(-1) === "") lines.pop();
 
-  const referenceArray = ['id', 'windmill', 'windmill_ascii', '', 'lat', 'lng', '', '', 'iso2', '', '', '', '', '', '', '', '', 'location', ''];
+  const referenceArray = ['id', 'name', 'name_ascii', '', 'lat', 'lng', '', '', 'iso2', '', '', '', '', '', '', '', '', 'location', ''];
 
   const parsedData = [];
 
@@ -49,6 +49,7 @@ fs.readFile("windmills.txt", "utf-8", (err, data) => {
         if (key === '') return;
         dataRow.push(items[index]);
     })
+    dataRow.push('windmill');
     parsedData.push(dataRow);
   });
 
