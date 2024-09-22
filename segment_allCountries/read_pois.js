@@ -33,17 +33,37 @@ const readPoi = (data, type) => {
   const lines = data.split(/\r?\n/);
   if (lines.at(-1) === "") lines.pop();
 
-  const referenceArray = ['id', 'name', 'name_ascii', '', 'lat', 'lng', '', '', 'iso2', '', '', '', '', '', '', '', '', 'location', ''];
+  const referenceArray = [
+    "id",
+    "name",
+    "name_ascii",
+    "",
+    "lat",
+    "lng",
+    "",
+    "",
+    "iso2",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "location",
+    "",
+  ];
 
   const parsedData = [];
 
   lines.forEach((line) => {
-    const items = line.split('\t');
+    const items = line.split("\t");
     const dataRow = [];
     referenceArray.forEach((key, index) => {
-        if (key === '') return;
-        dataRow.push(items[index]);
-    })
+      if (key === "") return;
+      dataRow.push(items[index]);
+    });
     dataRow.push(type);
     parsedData.push(dataRow);
   });
@@ -51,106 +71,29 @@ const readPoi = (data, type) => {
   writeToPostgres(parsedData);
 };
 
-fs.readFile("monuments.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "monument");
-});
+const groups = {
+  // monuments: "monument",
+  // windmills: "windmill",
+  // pieces_of_art: "piece_of_art",
+  // bridges: "bridge",
+  // churches: "church",
+  // castles: "castle",
+  // historical_sites: "historical_site",
+  // mosques: "mosque",
+  // museums: "museum",
+  // palaces: "palace",
+  // pyramids: "pyramid",
+  // religious_sites: "religious_site",
+  // towers: "tower",
+  synagogues: "synagogue",
+};
 
-fs.readFile("windmills.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "windmill");
-});
-
-fs.readFile("pieces_of_art.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "piece_of_art");
-});
-
-fs.readFile("bridges.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "bridge");
-});
-
-fs.readFile("churches.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "church");
-});
-
-fs.readFile("castles.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "castle");
-});
-
-fs.readFile("historical_sites.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "historical_site");
-});
-
-fs.readFile("mosques.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "mosque");
-});
-
-fs.readFile("museums.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "museum");
-});
-
-fs.readFile("palaces.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "palace");
-});
-
-fs.readFile("pyramids.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "pyramid");
-});
-
-fs.readFile("religious_sites.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "religious_site");
-});
-
-fs.readFile("towers.txt", "utf-8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  readPoi(data, "tower");
+Object.keys(groups).forEach((group) => {
+  fs.readFile(`${group}.txt`, "utf-8", (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    readPoi(data, groups[group]);
+  });
 });
